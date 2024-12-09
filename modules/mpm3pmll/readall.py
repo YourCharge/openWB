@@ -261,6 +261,19 @@ try:
         resp = client.read_holding_registers(0x5B2C, 2, unit=unit_id)
         hz = float(resp.registers[0]) / 100
         write_to_ramdisk('llhz', hz)
+
+        if not os.path.isfile("/var/www/html/openWB/ramdisk/lp1Serial") and os.path.isfile("/var/www/html/openWB/lp1Serial"):
+            print("Copying hard-coded serial number for B23 from '/var/www/html/openWB/lp1Serial' to ramdisk" +
+                  str(serial_port) + ", ID " + str(unit_id))
+            try:
+                with open('/var/www/html/openWB/lp1Serial', 'r') as f:
+                    sn = f.read()
+                    write_to_ramdisk('lp1Serial', sn)
+            except Exception:
+                print("Copying hard-coded serial number for B23 from '/var/www/html/openWB/lp1Serial' to ramdisk " +
+                      str(serial_port) + ", ID " + str(unit_id) + " is not available")
+                write_to_ramdisk('lp1Serial', "0")
+
 except Exception:
     write_to_ramdisk('llmodulconfig', 'data failure')
     traceback.print_exc()
